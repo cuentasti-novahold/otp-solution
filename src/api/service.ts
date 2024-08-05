@@ -1,12 +1,15 @@
 // lib/api.ts
 export interface User {
-    id: number;
-    name: string;
-    email: string;
-  }
+  fecha: string;
+  telefonocelular: string;
+  codigootp: string;
+  origenoperacion: string
+  estatus: string;
+  tiempoexpiracion: string;
+}
   
   export const fetchUsers = async (): Promise<User[]> => {
-    const response = await fetch('https://jsonplaceholder.typicode.com/users');
+    const response = await fetch('https://e698-167-0-170-94.ngrok-free.app/api/otp/view');
     if (!response.ok) {
       throw new Error('Error fetching users');
     }

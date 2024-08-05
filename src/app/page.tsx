@@ -5,15 +5,18 @@ import DataTable from '../../components/DataTable';
 import { fetchUsers } from '@/api/service';
 
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
+interface OTP {
+  fecha: string;
+  telefonocelular: string;
+  codigootp: string;
+  origenoperacion: string
+  estatus: string;
+  tiempoexpiracion: string;
 }
 
 export default function Home() {
 
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<OTP[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadData = async () => {

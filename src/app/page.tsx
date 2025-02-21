@@ -4,23 +4,22 @@ import React, { useEffect, useState } from 'react';
 import DataTable from '../../components/DataTable';
 import { fetchUsers } from '@/api/service';
 
-
-interface OTP {
+export interface OTP {
   fecha: string;
-  telefonocelular: string;
-  codigootp: string;
-  origenoperacion: string
+  telefonoCelular: string;
+  codigoOtp: string;
+  origenOperacion: string;
   estatus: string;
-  tiempoexpiracion: string;
+  tiempoExpiracion: string;
 }
 
 export default function Home() {
 
   const [data, setData] = useState<OTP[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const loadData = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       const users = await fetchUsers();
       setData(users);
@@ -47,8 +46,11 @@ export default function Home() {
         >
           {loading ? 'Cargando...' : 'Actualizar'}
         </button>
+        <div className="w-full">
+          En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos
+        </div>
         <div className="overflow-x-auto">
-          <DataTable data={data} />
+          <DataTable users={data} loading={loading}/>
         </div>
       </div>
 

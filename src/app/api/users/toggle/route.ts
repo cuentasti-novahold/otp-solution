@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
         const connection = await mysql.createConnection({
             host: 'dev-safi.cluster-chm4dm65arlq.us-east-1.rds.amazonaws.com',
             user: 'adminsafi',
-            password: 'TS4F1-D3v-#SH&F*$%#SAFI',
+            password: 'S4F1-D3v-#SH&F*$%#SAFI',
             database: 'microfinFC',
             multipleStatements: true,
         });

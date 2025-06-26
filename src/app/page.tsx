@@ -52,7 +52,7 @@ export default function Home() {
         </div>
         <div className="overflow-x-auto">
           <DataTable users={data} loading={loading} />
-          <ActiveUsers />
+
         </div>
       </div>
 

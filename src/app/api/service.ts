@@ -14,8 +14,8 @@ export const fetchUsers = async (): Promise<User[]> => {
   // const endpointotp = 'https://65cc-167-0-170-94.ngrok-free.app/api/otp/view';
   // const baseUrl = 'https://f0e7-2800-484-9d0a-7000-e9cf-87c7-df70-232a.ngrok-free.app';
   // const baseUrl = 'http://ec2-52-90-88-192.compute-1.amazonaws.com';
-  const baseUrl = 'http://localhost:5216';
-  // const baseUrl = 'https://otpsafi.bikleek.com';
+  // const baseUrl = 'http://localhost:5216';
+  const baseUrl = 'https://otpsafi.bikleek.com';
   const endpointotp = '/api/otp/view';
 
   console.error(baseUrl);
@@ -42,7 +42,7 @@ export const fetchUsers = async (): Promise<User[]> => {
 
 export const toggleUserStatus = async (id: number, estado: string) => {
   try {
-    const response = await fetch('/api/usuarios/toggle', {
+    const response = await fetch('/api/users/toggle', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

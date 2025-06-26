@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import DataTable from '../../components/DataTable';
-import { fetchUsers } from '@/api/service';
+import { fetchUsers } from '@/app/api/service';
+import ActiveUsers from '../../components/ActiveUsers';
 
 export interface OTP {
   fecha: string;
@@ -50,7 +51,8 @@ export default function Home() {
           En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos
         </div>
         <div className="overflow-x-auto">
-          <DataTable users={data} loading={loading}/>
+          <DataTable users={data} loading={loading} />
+          <ActiveUsers />
         </div>
       </div>
 

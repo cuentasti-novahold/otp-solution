@@ -1,8 +1,8 @@
 // components/UserTable.tsx
-import { fetchUsers, User } from '@/api/service';
+import { fetchUsers, User } from '@/app/api/service';
 import React, { useEffect, useState } from 'react';
 
-const formatDate = (isoString:string) => {
+const formatDate = (isoString: string) => {
   const date = new Date(isoString);
 
   const year = date.getFullYear();

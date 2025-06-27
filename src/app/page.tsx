@@ -17,6 +17,7 @@ export interface OTP {
 export default function Home() {
   const [data, setData] = useState<OTP[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [showOtp, setShowOtp] = useState<boolean>(true); // 👈 controla qué vista mostrar
 
   const loadData = async () => {
     setLoading(true);
@@ -31,8 +32,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (showOtp) loadData();
+  }, [showOtp]);
 
   return (
     <main className="w-full bg-white min-h-screen">
@@ -44,15 +45,23 @@ export default function Home() {
         {/* Botones */}
         <div className="flex justify-center gap-4 mb-6">
           <button
-            onClick={loadData}
-            className="bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md hover:bg-blue-700 transition duration-300"
-            disabled={loading}
+            onClick={() => {
+              setShowOtp(true);
+              loadData();
+            }}
+            className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${showOtp
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-200 text-black hover:bg-gray-300'
+              }`}
           >
-            {loading ? 'Cargando...' : 'CÓDIGO OTP'}
+            CÓDIGO OTP
           </button>
           <button
-            className="bg-lime-500 text-white font-bold py-3 px-6 rounded-full shadow-md hover:bg-lime-600 transition duration-300"
-            onClick={() => alert('Desbloqueo en construcción')}
+            onClick={() => setShowOtp(false)}
+            className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${!showOtp
+                ? 'bg-lime-500 text-white hover:bg-lime-600'
+                : 'bg-gray-200 text-black hover:bg-gray-300'
+              }`}
           >
             DESBLOQUEO USUARIO SAFI
           </button>
@@ -60,13 +69,18 @@ export default function Home() {
 
         {/* Texto explicativo */}
         <p className="text-center text-gray-700 mb-4">
-          En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos
+          {showOtp
+            ? 'En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos'
+            : 'Aquí puedes desbloquear usuarios bloqueados del sistema SAFI'}
         </p>
 
-        {/* Tabla + usuarios activos */}
+        {/* Tabla de datos */}
         <div className="overflow-x-auto">
-          <DataTable users={data} loading={loading} />
-          <ActiveUsers />
+          {showOtp ? (
+            <DataTable users={data} loading={loading} />
+          ) : (
+            <ActiveUsers />
+          )}
         </div>
       </div>
     </main>

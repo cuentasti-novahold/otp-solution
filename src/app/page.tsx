@@ -15,12 +15,11 @@ export interface OTP {
 }
 
 export default function Home() {
-
   const [data, setData] = useState<OTP[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const loadData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const users = await fetchUsers();
       setData(users);
@@ -36,26 +35,40 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="w-full bg-white">
-
+    <main className="w-full bg-white min-h-screen">
       <div className="p-5">
-        <h1 className="text-3xl font-bold mb-4 text-black">Consulta OTP del Usuario</h1>
-        <button
-          onClick={loadData}
-          className="mb-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
-          disabled={loading}
-        >
-          {loading ? 'Cargando...' : 'Actualizar'}
-        </button>
-        <div className="w-full">
-          En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos
+        <h1 className="text-3xl font-bold mb-6 text-black text-center">
+          VERIFICACIÓN OTP Y DESBLOQUEO DE USUARIO SAFI
+        </h1>
+
+        {/* Botones */}
+        <div className="flex justify-center gap-4 mb-6">
+          <button
+            onClick={loadData}
+            className="bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md hover:bg-blue-700 transition duration-300"
+            disabled={loading}
+          >
+            {loading ? 'Cargando...' : 'CÓDIGO OTP'}
+          </button>
+          <button
+            className="bg-lime-500 text-white font-bold py-3 px-6 rounded-full shadow-md hover:bg-lime-600 transition duration-300"
+            onClick={() => alert('Desbloqueo en construcción')}
+          >
+            DESBLOQUEO USUARIO SAFI
+          </button>
         </div>
+
+        {/* Texto explicativo */}
+        <p className="text-center text-gray-700 mb-4">
+          En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos
+        </p>
+
+        {/* Tabla + usuarios activos */}
         <div className="overflow-x-auto">
           <DataTable users={data} loading={loading} />
           <ActiveUsers />
         </div>
       </div>
-
     </main>
   );
 }

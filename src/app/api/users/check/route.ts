@@ -54,8 +54,6 @@ export async function POST(request: NextRequest) {
                 exists: true,
                 usuarioID: user.UsuarioID,
                 estatus: user.Estatus,
-                cancelado: !!user.FechaCancel,
-                bloqueado: !!user.FechaBloqueo,
                 fechaCancel: user.FechaCancel,
                 fechaBloqueo: user.FechaBloqueo,
                 motivoBloqueo: user.MotivoBloqueo

@@ -12,3 +12,8 @@
     /* py-2 px-3 */
     color: #000;
 }
+
+.button-color {
+    background-color: blue;
+    color: white;
+}

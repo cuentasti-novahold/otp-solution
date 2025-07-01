@@ -3,15 +3,11 @@ import mysql from 'mysql2/promise';
 
 export async function POST(request: NextRequest) {
     try {
-        // 🔍 Obtener IP del cliente
         const clientIp = request.headers.get('x-forwarded-for') || 'IP no disponible';
-        console.log('>>> IP del cliente:', clientIp);
-
         const body = await request.json();
-        const { id, estado } = body;
+        const { usuario, estado } = body;
 
-        if (!id || !estado) {
-            console.log('>>> Faltan parámetros');
+        if (!usuario || !estado) {
             return NextResponse.json({ error: 'Faltan parámetros.' }, { status: 400 });
         }
 
@@ -23,29 +19,37 @@ export async function POST(request: NextRequest) {
             multipleStatements: true,
         });
 
+        // 🔍 Buscar UsuarioID a partir del nombre de usuario
+        const [rows]: any = await connection.query(
+            'SELECT UsuarioID FROM USUARIOS WHERE Usuario = ?',
+            [usuario]
+        );
+
+        if (rows.length === 0) {
+            return NextResponse.json({ error: 'Usuario no encontrado.' }, { status: 404 });
+        }
+
+        const id = rows[0].UsuarioID;
+
         const [results]: any = await connection.query(
             `CALL microfinFC.USUARIOSACT(?, NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?, @NumErr, @ErrMen, ?, ?, NOW(), ?, 'APP', 1, 1234567890);
              SELECT @NumErr AS NumErr, @ErrMen AS ErrMen;`,
             [
-                id,                                  // Par_NumUsuario
-                estado === 'BLOQUEADO' ? 'A' : 'B', // Par_Estatus (se cambia)
-                2,                                   // Par_NumAct
-                1,                                   // Par_EmpresaID
-                1,                                   // Aud_Usuario
-                clientIp                             // Aud_DireccionIP (aquí lo pasamos al SP)
+                id,
+                estado === 'BLOQUEADO' ? 'A' : 'B',
+                2,
+                1,
+                1,
+                clientIp
             ]
         );
-
-        console.log('>>> results:', JSON.stringify(results, null, 2));
 
         const output = results[1][0];
 
         if (output.NumErr !== 0) {
-            console.log('>>> Error en SP:', output.ErrMen);
             return NextResponse.json({ error: output.ErrMen }, { status: 500 });
         }
 
-        console.log('>>> SP ejecutado correctamente:', output.ErrMen);
         return NextResponse.json({ success: true, message: output.ErrMen });
 
     } catch (error) {

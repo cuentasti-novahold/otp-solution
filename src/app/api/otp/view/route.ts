@@ -3,11 +3,11 @@ import type { NextRequest } from 'next/server';
 import mysql from 'mysql2/promise';
 
 const pool = mysql.createPool({
-    host: 'alb-bikleek-bd-confiadora-0705ba8529a5cb41.elb.us-west-2.amazonaws.com',
-    port: 13306,
-    user: 'lecturaPowerBIReplica',
-    password: 'L3ct$r4=P0w3r.B!/r34d0TP#s&r',
-    database: 'DW',
+    host: process.env.DB_REPORT_HOST,
+    port: Number(process.env.DB_REPORT_PORT),
+    user: process.env.DB_REPORT_USER,
+    password: process.env.DB_REPORT_PASS,
+    database: process.env.DB_REPORT_NAME,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,

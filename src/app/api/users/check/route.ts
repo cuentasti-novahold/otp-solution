@@ -3,10 +3,10 @@ import mysql from 'mysql2/promise';
 
 // 🔁 Pool reutilizable para evitar exceso de conexiones
 const pool = mysql.createPool({
-    host: 'dev-safi.cluster-chm4dm65arlq.us-east-1.rds.amazonaws.com',
-    user: 'adminsafi',
-    password: 'S4F1-D3v-#SH&F*$%#SAFI',
-    database: 'microfinFC',
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
     waitForConnections: true,
     connectionLimit: 10, // 👈 ajusta según tu capacidad
     queueLimit: 0

@@ -40,22 +40,29 @@ export const fetchUsers = async (): Promise<User[]> => {
 // ✅ Función agregada para cambiar el estado del usuario (bloqueo/desbloqueo)
 // lib/api.ts
 
-export const toggleUserStatus = async (id: number, estado: string) => {
+export const toggleUserStatus = async (usuario: string, estadoActual: string) => {
   try {
+    // Invertir estado: si está activo ('A'), se cambia a bloqueado ('B'), y viceversa
+    const nuevoEstado = estadoActual === 'A' ? 'B' : 'A';
+
     const response = await fetch('/api/users/toggle', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id, estado }),
+      body: JSON.stringify({ usuario, estado: nuevoEstado }),
     });
 
     if (!response.ok) {
-      throw new Error('Error al cambiar estado del usuario');
+      const errorData = await response.json();
+      throw new Error(errorData?.error || 'Error al cambiar estado del usuario');
     }
+
+    return await response.json(); // opcional si quieres usar el mensaje de éxito
   } catch (error) {
     console.error('Error al bloquear/desbloquear:', error);
     throw error;
   }
 };
+
 

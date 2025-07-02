@@ -18,10 +18,12 @@ export const fetchUsers = async (): Promise<User[]> => {
   // const baseUrl = 'https://otpsafi.bikleek.com';
   const endpointotp = '/api/otp/view';
 
-  console.error(baseUrl);
+  //console.error(baseUrl);
 
   try {
-    const response = await fetch(baseUrl + endpointotp, {
+    // const response = await fetch(baseUrl + endpointotp, {
+    const response = await fetch(endpointotp, {
+
       headers: {
         'ngrok-skip-browser-warning': 'true'
       }

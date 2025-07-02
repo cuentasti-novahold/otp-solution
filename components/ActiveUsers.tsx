@@ -52,21 +52,37 @@ const ActiveUsers: React.FC = () => {
 
 
     const handleToggle = async () => {
-
-
         try {
             setLoading(true);
-            await toggleUserStatus(username, estadoUsuario);
-            setUnlocked(true);
 
-            // Simula el cambio de estado local
-            setEstadoUsuario(estadoUsuario === 'ACTIVO' ? 'BLOQUEADO' : 'ACTIVO');
+            // 🔍 Consulta estado actual directamente desde la base de datos
+            const res = await fetch('/api/users/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario: username })
+            });
+
+            const data = await res.json();
+
+            if (!data.exists || (data.estatus !== 'A' && data.estatus !== 'B')) {
+                throw new Error('No se pudo verificar el estado actual del usuario.');
+            }
+
+            const estadoActual: 'A' | 'B' = data.estatus;
+            const nuevoEstado: 'A' | 'B' = estadoActual === 'A' ? 'A' : 'B';
+
+            // 🛠 Ejecutar cambio en base de datos
+            await toggleUserStatus(username, nuevoEstado);
+
+            setUnlocked(true);
+            setEstadoUsuario(nuevoEstado === 'A' ? 'BLOQUEADO' : 'ACTIVO');
         } catch (error) {
             console.error('Error al cambiar estado del usuario:', error);
         } finally {
             setLoading(false);
         }
     };
+
 
 
     const label = estadoUsuario === 'ACTIVO' ? 'BLOQUEAR' : 'DESBLOQUEAR';

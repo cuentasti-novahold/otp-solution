@@ -17,3 +17,38 @@
     background-color: blue;
     color: white;
 }
+
+
+/* styles.css */
+.button-toggle {
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+    color: white;
+    border: none;
+}
+
+.button-disabled {
+    background-color: #9ca3af !important;
+    cursor: not-allowed;
+}
+
+.button-active {
+    background-color: #dc2626 !important;
+    cursor: pointer;
+}
+
+.button-active:hover {
+    background-color: #b91c1c;
+}
+
+.button-blocked {
+    background-color: #16a34a !important;
+    cursor: pointer;
+}
+
+.button-blocked:hover {
+    background-color: #15803d;
+}

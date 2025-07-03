@@ -109,20 +109,12 @@ const ActiveUsers: React.FC = () => {
             )}
             <button
                 onClick={handleToggle}
-                style={{
-                    padding: '0.5rem 1.5rem',
-                    borderRadius: '9999px',
-                    fontWeight: '600',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                    transition: 'background-color 0.3s',
-                    backgroundColor: !userValid
-                        ? '#9CA3AF' // gray-400
+                className={`button-toggle ${!userValid
+                        ? 'button-disabled'
                         : estadoUsuario === 'ACTIVO'
-                            ? '#DC2626' // red-600
-                            : '#16A34A', // green-600
-                    color: 'white',
-                    cursor: !userValid ? 'not-allowed' : 'pointer'
-                }}
+                            ? 'button-active'
+                            : 'button-blocked'
+                    }`}
                 onMouseEnter={(e) => {
                     if (!userValid) return;
                     e.currentTarget.style.backgroundColor =

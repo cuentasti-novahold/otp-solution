@@ -52,3 +52,9 @@
 .button-blocked:hover {
     background-color: #15803d;
 }
+
+.container-centered {
+    margin: 0 auto;
+    width: 80%;
+    text-align: center;
+}

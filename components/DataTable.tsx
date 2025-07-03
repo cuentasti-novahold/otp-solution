@@ -27,7 +27,7 @@ const UserTable: React.FC<UserTableProps> = ({ users, loading }) => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <table className="min-w-full bg-white border border-gray-200" style={{ margin: "0 auto", width: "80%", textAlign: "center" }}>
+        <table className="min-w-full bg-white border border-gray-200 container-centered">
           <thead>
             <tr>
               <th className="py-2 px-4 border-b">Fecha</th>

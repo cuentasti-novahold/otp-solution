@@ -8,7 +8,7 @@ const ActiveUsers: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [checking, setChecking] = useState(false);
     const [userValid, setUserValid] = useState(false);
-    const [estadoUsuario, setEstadoUsuario] = useState<'ACTIVO' | 'BLOQUEADO' | null>(null);
+    const [estadoUsuario, setEstadoUsuario] = useState<string | null>(null);
 
     useEffect(() => {
         const checkUser = async () => {
@@ -30,13 +30,17 @@ const ActiveUsers: React.FC = () => {
                 const data = await res.json();
                 setUserValid(data.exists);
 
-                // 🎯 Aquí traducimos la letra a nombre de estado
-                const estado =
-                    data.estatus === 'A' ? 'ACTIVO' :
-                        data.estatus === 'B' ? 'BLOQUEADO' :
-                            null;
+                // 🎯 Mapear todos los posibles estados
+                let estadoDesc = null;
+                switch (data.estatus) {
+                    case 'A': estadoDesc = 'ACTIVO'; break;
+                    case 'B': estadoDesc = 'BLOQUEADO'; break;
+                    case 'I': estadoDesc = 'INACTIVO'; break;
+                    case 'C': estadoDesc = 'CANCELADO'; break;
+                    default: estadoDesc = `ESTADO DESCONOCIDO (${data.estatus})`;
+                }
 
-                setEstadoUsuario(estado);
+                setEstadoUsuario(estadoDesc);
             } catch (error) {
                 console.error('Error verificando usuario:', error);
                 setUserValid(false);
@@ -50,12 +54,12 @@ const ActiveUsers: React.FC = () => {
         return () => clearTimeout(delay);
     }, [username]);
 
-
     const handleToggle = async () => {
+        if (estadoUsuario !== 'BLOQUEADO') return;
+
         try {
             setLoading(true);
 
-            // 🔍 Consulta estado actual directamente desde la base de datos
             const res = await fetch('/api/users/check', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -63,29 +67,23 @@ const ActiveUsers: React.FC = () => {
             });
 
             const data = await res.json();
-
-            if (!data.exists || (data.estatus !== 'A' && data.estatus !== 'B')) {
-                throw new Error('No se pudo verificar el estado actual del usuario.');
+            if (!data.exists || data.estatus !== 'B') {
+                throw new Error('Solo se puede desbloquear usuarios bloqueados.');
             }
 
-            const estadoActual: 'A' | 'B' = data.estatus;
-            const nuevoEstado: 'A' | 'B' = estadoActual === 'A' ? 'A' : 'B';
-
-            // 🛠 Ejecutar cambio en base de datos
-            await toggleUserStatus(username, nuevoEstado);
+            await toggleUserStatus(username, 'B');
 
             setUnlocked(true);
-            setEstadoUsuario(nuevoEstado === 'A' ? 'BLOQUEADO' : 'ACTIVO');
+            setEstadoUsuario('ACTIVO');
         } catch (error) {
-            console.error('Error al cambiar estado del usuario:', error);
+            console.error('Error al intentar desbloquear usuario:', error);
         } finally {
             setLoading(false);
         }
     };
 
-
-
-    const label = estadoUsuario === 'ACTIVO' ? 'BLOQUEAR' : 'DESBLOQUEAR';
+    const label = estadoUsuario === 'BLOQUEADO' ? 'DESBLOQUEAR' : 'SIN ACCIÓN';
+    const botonHabilitado = userValid && estadoUsuario === 'BLOQUEADO';
 
     return (
         <div className="flex flex-col items-center justify-center gap-4 mt-10">
@@ -101,38 +99,30 @@ const ActiveUsers: React.FC = () => {
                     setUsername(e.target.value.toUpperCase());
                     setUnlocked(false);
                 }}
-                className="input-bordered "
+                className="input-bordered"
             />
 
             {!checking && username && !userValid && (
                 <p className="text-red-500 text-sm">⚠️ Usuario no encontrado</p>
             )}
+
+            {userValid && estadoUsuario && (
+                <p className="text-blue-600 text-sm font-semibold">
+                    Estado actual del usuario: {estadoUsuario}
+                </p>
+            )}
+
             <button
                 onClick={handleToggle}
-                className={`button-toggle ${!userValid
-                        ? 'button-disabled'
-                        : estadoUsuario === 'ACTIVO'
-                            ? 'button-active'
-                            : 'button-blocked'
-                    }`}
-                onMouseEnter={(e) => {
-                    if (!userValid) return;
-                    e.currentTarget.style.backgroundColor =
-                        estadoUsuario === 'ACTIVO' ? '#B91C1C' : '#15803D'; // hover colors
-                }}
-                onMouseLeave={(e) => {
-                    if (!userValid) return;
-                    e.currentTarget.style.backgroundColor =
-                        estadoUsuario === 'ACTIVO' ? '#DC2626' : '#16A34A'; // normal colors
-                }}
+                disabled={!botonHabilitado}
+                className={`button-toggle ${!botonHabilitado ? 'button-disabled' : 'button-blocked'}`}
             >
                 {loading ? `${label}...` : label}
             </button>
 
-
             {unlocked && (
                 <div className="mt-6 px-4 py-3 border border-gray-400 text-gray-800 rounded shadow-md bg-gray-100">
-                    ✅ El estado del usuario fue actualizado correctamente.
+                    ✅ El usuario fue desbloqueado correctamente.
                 </div>
             )}
         </div>

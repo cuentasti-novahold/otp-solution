@@ -30,7 +30,6 @@ const ActiveUsers: React.FC = () => {
                 const data = await res.json();
                 setUserValid(data.exists);
 
-                // 🎯 Mapear todos los posibles estados
                 let estadoDesc = null;
                 switch (data.estatus) {
                     case 'A': estadoDesc = 'ACTIVO'; break;
@@ -86,8 +85,8 @@ const ActiveUsers: React.FC = () => {
     const botonHabilitado = userValid && estadoUsuario === 'BLOQUEADO';
 
     return (
-        <div className="flex flex-col items-center justify-center gap-4 mt-10">
-            <label className="text-gray-700 text-lg font-medium">
+        <div className="container-column-center">
+            <label className="label-text">
                 Ingrese el usuario de acceso a SAFI
             </label>
 
@@ -99,15 +98,15 @@ const ActiveUsers: React.FC = () => {
                     setUsername(e.target.value.toUpperCase());
                     setUnlocked(false);
                 }}
-                className="input-bordered"
+                className="input-box"
             />
 
             {!checking && username && !userValid && (
-                <p className="text-red-500 text-sm">⚠️ Usuario no encontrado</p>
+                <p className="label-text">⚠️ Usuario no encontrado</p>
             )}
 
             {userValid && estadoUsuario && (
-                <p className="text-blue-600 text-sm font-semibold">
+                <p className="estado-usuario">
                     Estado actual del usuario: {estadoUsuario}
                 </p>
             )}
@@ -115,13 +114,22 @@ const ActiveUsers: React.FC = () => {
             <button
                 onClick={handleToggle}
                 disabled={!botonHabilitado}
-                className={`button-toggle ${!botonHabilitado ? 'button-disabled' : 'button-blocked'}`}
+                className={`boton-toggle ${botonHabilitado ? 'boton-toggle-habilitado' : 'boton-toggle-deshabilitado'}`}
+
+                onMouseEnter={(e) => {
+                    if (!botonHabilitado) return;
+                    e.currentTarget.style.backgroundColor = '#15803D'; // hover green
+                }}
+                onMouseLeave={(e) => {
+                    if (!botonHabilitado) return;
+                    e.currentTarget.style.backgroundColor = '#16A34A'; // normal green
+                }}
             >
                 {loading ? `${label}...` : label}
             </button>
 
             {unlocked && (
-                <div className="mt-6 px-4 py-3 border border-gray-400 text-gray-800 rounded shadow-md bg-gray-100">
+                <div className="mensaje-confirmacion">
                     ✅ El usuario fue desbloqueado correctamente.
                 </div>
             )}

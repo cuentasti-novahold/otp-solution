@@ -49,6 +49,7 @@ const UserTable: React.FC<UserTableProps> = ({ users, loading }) => {
             ))}
           </tbody>
         </table>
+
       )}
     </div>
   );

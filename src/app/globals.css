@@ -142,3 +142,66 @@
     /* rounded-md */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
+
+.responsive-table {
+    width: 100%;
+    margin: 1rem auto;
+    font-family: sans-serif;
+}
+
+.responsive-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.responsive-table th,
+.responsive-table td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Modo tarjeta para pantallas pequeñas */
+@media (max-width: 768px) {
+
+    .responsive-table table,
+    .responsive-table thead,
+    .responsive-table tbody,
+    .responsive-table th,
+    .responsive-table td,
+    .responsive-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    .responsive-table thead {
+        display: none;
+    }
+
+    .responsive-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        background-color: #f9f9f9;
+    }
+
+    .responsive-table td {
+        position: relative;
+        padding-left: 50%;
+        text-align: left;
+        border: none;
+        border-bottom: 1px solid #eee;
+    }
+
+    .responsive-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 12px;
+        top: 8px;
+        font-weight: bold;
+        color: #555;
+        white-space: nowrap;
+    }
+}

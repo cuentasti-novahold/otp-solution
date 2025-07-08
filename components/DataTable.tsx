@@ -27,37 +27,40 @@ const UserTable: React.FC<UserTableProps> = ({ users, loading }) => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <table className="min-w-full bg-white border border-gray-200 container-centered">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b">Fecha</th>
-              <th className="py-2 px-4 border-b">Teléfono Celular</th>
-              <th className="py-2 px-4 border-b">Código OTP</th>
-              <th className="py-2 px-4 border-b">Origen Operación</th>
-              <th className="py-2 px-4 border-b">Estatus</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user, index) => (
-              <tr key={`${user.codigoOtp}-${index}`}>
-                <td className="py-2 px-4 border-b">
-                  {new Date(user.fecha).toLocaleString('es-CO', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                  })}
-                </td>
-                <td className="py-2 px-4 border-b">{user.telefonoCelular}</td>
-                <td className="py-2 px-4 border-b">{user.codigoOtp}</td>
-                <td className="py-2 px-4 border-b">{user.origenOperacion}</td>
-                <td className="py-2 px-4 border-b">{user.estatus}</td>
+        <div className="responsive-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Teléfono Celular</th>
+                <th>Código OTP</th>
+                <th>Origen Operación</th>
+                <th>Estatus</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {users.map((user, index) => (
+                <tr key={`${user.codigoOtp}-${index}`}>
+                  <td data-label="Fecha">
+                    {new Date(user.fecha).toLocaleString('es-CO', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false
+                    })}
+                  </td>
+                  <td data-label="Teléfono Celular">{user.telefonoCelular}</td>
+                  <td data-label="Código OTP">{user.codigoOtp}</td>
+                  <td data-label="Origen Operación">{user.origenOperacion}</td>
+                  <td data-label="Estatus">{user.estatus}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
 
       )}
     </div>

@@ -40,7 +40,16 @@ const UserTable: React.FC<UserTableProps> = ({ users, loading }) => {
           <tbody>
             {users.map((user, index) => (
               <tr key={`${user.codigoOtp}-${index}`}>
-                <td className="py-2 px-4 border-b">{user.fecha}</td>
+                <td className="py-2 px-4 border-b">
+                  {new Date(user.fecha).toLocaleString('es-CO', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                  })}
+                </td>
                 <td className="py-2 px-4 border-b">{user.telefonoCelular}</td>
                 <td className="py-2 px-4 border-b">{user.codigoOtp}</td>
                 <td className="py-2 px-4 border-b">{user.origenOperacion}</td>

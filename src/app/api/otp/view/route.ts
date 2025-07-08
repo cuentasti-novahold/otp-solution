@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import mysql from 'mysql2/promise';
 
+// 👇 Fuerza que la función sea dinámica en Next.js (importante para Vercel)
+export const dynamic = 'force-dynamic';
+
 const pool = mysql.createPool({
     host: process.env.DB_REPORT_HOST,
     port: Number(process.env.DB_REPORT_PORT),
@@ -30,7 +33,17 @@ export async function GET(request: NextRequest) {
             telefonoCelular: row.TelefonoCelular,
         }));
 
-        return NextResponse.json(formatted);
+        // 👇 Respuesta con headers que deshabilitan caché
+        return new NextResponse(JSON.stringify(formatted), {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+                'Surrogate-Control': 'no-store',
+            },
+        });
     } catch (error) {
         console.error('❌ Error al consultar CODIGOS_OTP_V:', error);
         return NextResponse.json(

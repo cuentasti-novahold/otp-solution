@@ -92,7 +92,7 @@ const ActiveUsers: React.FC = () => {
 
             <input
                 type="text"
-                placeholder="Ej: FCYHOYOS"
+                placeholder="Ej: FCAMONTOYA"
                 value={username}
                 onChange={(e) => {
                     setUsername(e.target.value.toUpperCase());

@@ -27,8 +27,9 @@ export async function POST(request: NextRequest) {
 
         connection = await pool.getConnection();
 
+        // 🔹 Buscar usuario con Clave incluida
         const [rows]: any = await connection.query(
-            'SELECT UsuarioID, Estatus FROM USUARIOS WHERE Clave = ?',
+            'SELECT UsuarioID, Clave, Estatus FROM USUARIOS WHERE Clave = ?',
             [usuario]
         );
 
@@ -37,15 +38,17 @@ export async function POST(request: NextRequest) {
         }
 
         const usuarioID = rows[0].UsuarioID;
+        const claveUsuario = rows[0].Clave; // 🔹 Guardamos la clave
         const estadoActual = rows[0].Estatus; // 'A' o 'B'
         const nuevoEstado = estadoActual === 'A' ? 'B' : 'A';
         const motivoBloqueo = nuevoEstado === 'B' ? 'Bloqueo manual desde app' : '';
         const fechaBloqueo = nuevoEstado === 'B' ? new Date() : null;
 
-        // Variables de salida
+        // Variables de salida SP
         await connection.query(`SET @NumErr = 0;`);
         await connection.query(`SET @ErrMen = '';`);
 
+        // Ejecutar SP
         await connection.query(`
             CALL microfinFC.USUARIOSACT(
                 ?, NULL, ?, ?, ?,
@@ -79,6 +82,19 @@ export async function POST(request: NextRequest) {
                 { status: 500 }
             );
         }
+
+        // ✅ Insertar log con ClaveUsuario
+        await connection.query(`
+            INSERT INTO BLOQUEO_USUARIO_LOG
+            (UsuarioID, ClaveUsuario, Accion, IP, Motivo, FechaAccion)
+            VALUES (?, ?, ?, ?, ?, NOW())
+        `, [
+            usuarioID,
+            claveUsuario, // 🔹 Nuevo campo
+            nuevoEstado === 'A' ? 'DESBLOQUEO' : 'BLOQUEO',
+            clientIp,
+            motivoBloqueo || 'Desbloqueo manual desde app'
+        ]);
 
         return NextResponse.json({
             success: true,

@@ -42,13 +42,14 @@ const UserTable: React.FC<UserTableProps> = ({ users, loading }) => {
               {users.map((user, index) => (
                 <tr key={`${user.codigoOtp}-${index}`}>
                   <td data-label="Fecha">
-                    {new Date(user.fecha).toLocaleString('es-CO', {
+                    {new Date(user.fecha).toLocaleString({
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit',
-                      hour12: false
+                      hour12: false,
+                      timeZone: 'UTC' // 👈 evita que se ajuste
                     })}
                   </td>
                   <td data-label="Teléfono Celular">{user.telefonoCelular}</td>

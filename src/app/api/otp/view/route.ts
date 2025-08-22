@@ -14,6 +14,7 @@ const pool = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
+    dateStrings: true, // 👈 Esto hace que DATETIME/TIMESTAMP vengan como string plano
 });
 
 export async function GET(request: NextRequest) {
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
         const [rows]: any[] = await connection.query('SELECT * FROM DW.CODIGOS_OTP_V');
 
         const formatted = rows.map((row: any) => ({
-            fecha: row.Fecha,
+            fecha: row.Fecha, // 👈 ahora llega tal cual como está en la BD
             codigoOtp: row.CodigoOTP,
             estatus: row.Estatus,
             origenOperacion: row.OrigenOperacion,

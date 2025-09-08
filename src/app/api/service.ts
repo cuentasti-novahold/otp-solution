@@ -60,4 +60,58 @@ export const toggleUserStatus = async (usuario: string, estadoActual: string) =>
   }
 };
 
+// 🚀 NUEVA FUNCIÓN → para /arnova y /solvia
+export const toggleUserStatusByCountry = async (
+  usuario: string,
+  estadoActual: string,
+  pais: 'arnova' | 'solvia'
+) => {
+  try {
+    const nuevoEstado = estadoActual === 'A' ? 'B' : 'A';
 
+    // endpoint dinámico según país
+    const endpoint = `/api/${pais}/users/toggle`;
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ usuario, estado: nuevoEstado }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData?.error ||
+        `Error al cambiar estado del usuario (${pais})`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error en toggleUserStatusByCountry (${pais}):`, error);
+    throw error;
+  }
+};
+
+
+// ✅ Verificar usuario
+export const checkUser = async (usuario: string) => {
+  try {
+    const response = await fetch('/api/users/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al verificar usuario');
+    }
+
+    return await response.json(); // { exists: boolean, estatus: string }
+  } catch (error) {
+    console.error('Error en checkUser:', error);
+    throw error;
+  }
+};

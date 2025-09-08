@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { toggleUserStatus } from '@/app/api/service';
+import { checkUser, toggleUserStatus } from '@/app/api/service';
 
 const ActiveUsers: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -11,7 +11,7 @@ const ActiveUsers: React.FC = () => {
     const [estadoUsuario, setEstadoUsuario] = useState<string | null>(null);
 
     useEffect(() => {
-        const checkUser = async () => {
+        const check = async () => {
             const trimmed = username.trim().toUpperCase();
             if (!trimmed) {
                 setUserValid(false);
@@ -21,13 +21,8 @@ const ActiveUsers: React.FC = () => {
 
             setChecking(true);
             try {
-                const res = await fetch('/api/users/check', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ usuario: trimmed }),
-                });
+                const data: any = await checkUser(trimmed); // ✅ uso del service
 
-                const data = await res.json();
                 setUserValid(data.exists);
 
                 let estadoDesc = null;
@@ -49,7 +44,7 @@ const ActiveUsers: React.FC = () => {
             }
         };
 
-        const delay = setTimeout(checkUser, 500); // debounce
+        const delay = setTimeout(check, 500); // debounce
         return () => clearTimeout(delay);
     }, [username]);
 
@@ -138,3 +133,5 @@ const ActiveUsers: React.FC = () => {
 };
 
 export default ActiveUsers;
+
+

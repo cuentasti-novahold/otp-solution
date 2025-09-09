@@ -90,7 +90,7 @@ const ActiveUsers: React.FC = () => {
 
     const label = estadoUsuario === 'BLOQUEADO' ? 'DESBLOQUEAR' : 'SIN ACCIÓN';
     const botonHabilitado = userValid && estadoUsuario === 'BLOQUEADO';
-
+    const isSolvia = pathname.includes("solvia");
     return (
         <div className="container-column-center">
             <label className="label-text">
@@ -99,7 +99,7 @@ const ActiveUsers: React.FC = () => {
 
             <input
                 type="text"
-                placeholder="Ej: FCAMONTOYA"
+                placeholder={isSolvia ? "Ej: FSJSUAREZ" : "Ej: FCAMONTOYA"}
                 value={username}
                 onChange={(e) => {
                     setUsername(e.target.value.toUpperCase());

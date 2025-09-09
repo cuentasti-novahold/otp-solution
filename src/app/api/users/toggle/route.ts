@@ -1,30 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server';
 import mysql from 'mysql2/promise';
 
-const pool = mysql.createPool({
+// Arnova (default → microfinFC)
+const poolArnova = mysql.createPool({
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
+    port: Number(process.env.DB_PORT || 3306),
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
     multipleStatements: true
 });
 
+// Solvia (microfinFS)
+const poolSolvia = mysql.createPool({
+    host: process.env.DB_SOLVIA_HOST,
+    database: process.env.DB_SOLVIA_NAME,
+    user: process.env.DB_SOLVIA_USER,
+    password: process.env.DB_SOLVIA_PASS,
+    port: Number(process.env.DB_SOLVIA_PORT || 3306),
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    multipleStatements: true
+});
+
+// 🔁 Función auxiliar para escoger pool
+function getPoolByPais(pais?: string) {
+    switch ((pais || '').toLowerCase()) {
+        case 'solvia':
+            return poolSolvia;
+        case 'arnova':
+        default:
+            return poolArnova;
+    }
+}
+
 export async function POST(request: NextRequest) {
     let connection;
 
     try {
-        const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'IP no disponible';
+        const clientIp =
+            request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'IP no disponible';
         const body = await request.json();
 
-        const { usuario } = body;
+        const { usuario, pais } = body;
 
         if (!usuario) {
-            return NextResponse.json({ error: 'Falta el parámetro requerido: usuario.' }, { status: 400 });
+            return NextResponse.json(
+                { error: 'Falta el parámetro requerido: usuario.' },
+                { status: 400 }
+            );
         }
 
+        const pool = getPoolByPais(pais);
         connection = await pool.getConnection();
 
         // 🔹 Buscar usuario con Clave incluida
@@ -38,7 +69,7 @@ export async function POST(request: NextRequest) {
         }
 
         const usuarioID = rows[0].UsuarioID;
-        const claveUsuario = rows[0].Clave; // 🔹 Guardamos la clave
+        const claveUsuario = rows[0].Clave;
         const estadoActual = rows[0].Estatus; // 'A' o 'B'
         const nuevoEstado = estadoActual === 'A' ? 'B' : 'A';
         const motivoBloqueo = nuevoEstado === 'B' ? 'Bloqueo manual desde app' : '';
@@ -48,32 +79,36 @@ export async function POST(request: NextRequest) {
         await connection.query(`SET @NumErr = 0;`);
         await connection.query(`SET @ErrMen = '';`);
 
-        // Ejecutar SP
-        await connection.query(`
-            CALL microfinFC.USUARIOSACT(
-                ?, NULL, ?, ?, ?,
-                NULL, NULL, NULL, NULL, NULL, NULL,
-                2, 'S',
-                @NumErr, @ErrMen,
-                1, 1, NOW(),
-                ?, 'APP', 1, 1234567890
-            );
-        `, [
-            usuarioID,
-            nuevoEstado,
-            motivoBloqueo,
-            fechaBloqueo,
-            clientIp
-        ]);
+        // ⚠️ Usamos el schema correcto según el pool
+        const schema = pais?.toLowerCase() === 'solvia' ? 'microfinFS' : 'microfinFC';
 
-        const [result]: any = await connection.query(`SELECT @NumErr AS NumErr, @ErrMen AS ErrMen;`);
+        await connection.query(
+            `
+      CALL ${schema}.USUARIOSACT(
+        ?, NULL, ?, ?, ?,
+        NULL, NULL, NULL, NULL, NULL, NULL,
+        2, 'S',
+        @NumErr, @ErrMen,
+        1, 1, NOW(),
+        ?, 'APP', 1, 1234567890
+      );
+    `,
+            [usuarioID, nuevoEstado, motivoBloqueo, fechaBloqueo, clientIp]
+        );
+
+        const [result]: any = await connection.query(
+            `SELECT @NumErr AS NumErr, @ErrMen AS ErrMen;`
+        );
         const output = result?.[0];
 
         if (!output || output.NumErr === undefined) {
-            return NextResponse.json({
-                error: 'No se recibió una respuesta válida del procedimiento almacenado.',
-                detalle: 'La salida esperada (@NumErr y @ErrMen) no fue encontrada.'
-            }, { status: 500 });
+            return NextResponse.json(
+                {
+                    error: 'No se recibió una respuesta válida del procedimiento almacenado.',
+                    detalle: 'La salida esperada (@NumErr y @ErrMen) no fue encontrada.'
+                },
+                { status: 500 }
+            );
         }
 
         if (output.NumErr !== 0) {
@@ -83,27 +118,36 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // ✅ Insertar log con ClaveUsuario
-        await connection.query(`
-            INSERT INTO BLOQUEO_USUARIO_LOG
-            (UsuarioID, ClaveUsuario, Accion, IP, Motivo, FechaAccion)
-            VALUES (?, ?, ?, ?, ?, NOW())
-        `, [
-            usuarioID,
-            claveUsuario, // 🔹 Nuevo campo
-            nuevoEstado === 'A' ? 'DESBLOQUEO' : 'BLOQUEO',
-            clientIp,
-            motivoBloqueo || 'Desbloqueo manual desde app'
-        ]);
+        // ✅ Insertar log
+        await connection.query(
+            `
+      INSERT INTO BLOQUEO_USUARIO_LOG
+      (UsuarioID, ClaveUsuario, Accion, IP, Motivo, FechaAccion)
+      VALUES (?, ?, ?, ?, ?, NOW())
+    `,
+            [
+                usuarioID,
+                claveUsuario,
+                nuevoEstado === 'A' ? 'DESBLOQUEO' : 'BLOQUEO',
+                clientIp,
+                motivoBloqueo || 'Desbloqueo manual desde app'
+            ]
+        );
 
         return NextResponse.json({
             success: true,
-            message: nuevoEstado === 'A' ? 'Usuario desbloqueado correctamente.' : 'Usuario bloqueado correctamente.'
+            message:
+                nuevoEstado === 'A'
+                    ? 'Usuario desbloqueado correctamente.'
+                    : 'Usuario bloqueado correctamente.',
+            pais: pais || 'arnova'
         });
-
     } catch (err: any) {
         console.error('❌ Error general:', err);
-        return NextResponse.json({ error: 'Error interno inesperado.', detalle: err.message }, { status: 500 });
+        return NextResponse.json(
+            { error: 'Error interno inesperado.', detalle: err.message },
+            { status: 500 }
+        );
     } finally {
         if (connection) connection.release();
     }

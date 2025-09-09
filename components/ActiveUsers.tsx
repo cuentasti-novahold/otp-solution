@@ -1,8 +1,16 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { checkUser, toggleUserStatus } from '@/app/api/service';
+import { usePathname } from 'next/navigation';
+import { checkUser, toggleUserStatusByCountry, toggleUserStatus, checkUserByCountry } from '@/app/api/service';
+
 
 const ActiveUsers: React.FC = () => {
+    const pathname = usePathname();
+    const segment = pathname.split('/')[1]; // '' | 'arnova' | 'solvia'
+
+    const isCountryRoute = segment === 'arnova' || segment === 'solvia';
+    const pais = isCountryRoute ? (segment as 'arnova' | 'solvia') : null;
+
     const [username, setUsername] = useState('');
     const [unlocked, setUnlocked] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -21,7 +29,10 @@ const ActiveUsers: React.FC = () => {
 
             setChecking(true);
             try {
-                const data: any = await checkUser(trimmed); // ✅ uso del service
+                // ✅ si hay país → usa la función por país
+                const data = pais
+                    ? await checkUserByCountry(trimmed, pais)
+                    : await checkUser(trimmed);
 
                 setUserValid(data.exists);
 
@@ -46,7 +57,7 @@ const ActiveUsers: React.FC = () => {
 
         const delay = setTimeout(check, 500); // debounce
         return () => clearTimeout(delay);
-    }, [username]);
+    }, [username, pais]);
 
     const handleToggle = async () => {
         if (estadoUsuario !== 'BLOQUEADO') return;
@@ -54,18 +65,19 @@ const ActiveUsers: React.FC = () => {
         try {
             setLoading(true);
 
-            const res = await fetch('/api/users/check', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usuario: username })
-            });
+            const data = pais
+                ? await checkUserByCountry(username, pais)
+                : await checkUser(username);
 
-            const data = await res.json();
             if (!data.exists || data.estatus !== 'B') {
                 throw new Error('Solo se puede desbloquear usuarios bloqueados.');
             }
 
-            await toggleUserStatus(username, 'B');
+            if (pais) {
+                await toggleUserStatusByCountry(username, 'B', pais);
+            } else {
+                await toggleUserStatus(username, 'B');
+            }
 
             setUnlocked(true);
             setEstadoUsuario('ACTIVO');
@@ -82,7 +94,7 @@ const ActiveUsers: React.FC = () => {
     return (
         <div className="container-column-center">
             <label className="label-text">
-                Ingrese el usuario de acceso a SAFI
+                Ingrese el usuario de acceso a SAFI {pais ? `(${pais.toUpperCase()})` : ''}
             </label>
 
             <input
@@ -109,16 +121,10 @@ const ActiveUsers: React.FC = () => {
             <button
                 onClick={handleToggle}
                 disabled={!botonHabilitado}
-                className={`boton-toggle ${botonHabilitado ? 'boton-toggle-habilitado' : 'boton-toggle-deshabilitado'}`}
-
-                onMouseEnter={(e) => {
-                    if (!botonHabilitado) return;
-                    e.currentTarget.style.backgroundColor = '#15803D'; // hover green
-                }}
-                onMouseLeave={(e) => {
-                    if (!botonHabilitado) return;
-                    e.currentTarget.style.backgroundColor = '#16A34A'; // normal green
-                }}
+                className={`boton-toggle ${botonHabilitado
+                    ? 'boton-toggle-habilitado'
+                    : 'boton-toggle-deshabilitado'
+                    }`}
             >
                 {loading ? `${label}...` : label}
             </button>

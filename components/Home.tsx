@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import DataTable from './DataTable';
 import ActiveUsers from './ActiveUsers';
+import { fetchUsers } from '@/app/api/service';
 
 export interface OTP {
     fecha: string;
@@ -25,8 +26,7 @@ export default function Home({ pais }: HomeProps) {
     const loadData = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/codigos-otp?pais=${pais}`);
-            const users = await res.json();
+            const users = await fetchUsers(); // ✅ uso del servicio centralizado
             setData(users);
         } catch (error) {
             console.error('Error fetching data:', error);

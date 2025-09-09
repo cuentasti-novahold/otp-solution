@@ -115,3 +115,29 @@ export const checkUser = async (usuario: string) => {
     throw error;
   }
 };
+
+
+// ✅ Verificar usuario por país
+export const checkUserByCountry = async (
+  usuario: string,
+  pais: 'arnova' | 'solvia'
+) => {
+  try {
+    const endpoint = `/api/${pais}/users/check`;
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error al verificar usuario (${pais})`);
+    }
+
+    return await response.json(); // { exists: boolean, estatus: string }
+  } catch (error) {
+    console.error(`Error en checkUserByCountry (${pais}):`, error);
+    throw error;
+  }
+};

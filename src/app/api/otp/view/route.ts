@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
                 pool = poolReportSolvia;
                 break;
             case 'arnova': // 👈 usa mismo DW que microfinFC
-                pool = poolReportArnova;
+                pool = poolReportDefault;
                 break;
             default: // 👈 por defecto replica
                 pool = poolReportDefault;

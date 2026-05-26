@@ -26,7 +26,7 @@ export default function Home({ pais }: HomeProps) {
     const [loading, setLoading] = useState<boolean>(true);
     const [showOtp, setShowOtp] = useState<boolean>(true);
 
-    // selector Arnova
+    // Selector Arnova
     const [arnovaCountry, setArnovaCountry] =
         useState<ArnovaCountry>("arnova");
 
@@ -49,7 +49,7 @@ export default function Home({ pais }: HomeProps) {
 
         return arnovaCountry === "guatemala"
             ? "VERIFICACIÓN OTP Y DESBLOQUEO – ARNOVA GUATEMALA"
-            : "VERIFICACIÓN OTP Y DESBLOQUEO – ARNOVA EL SALVADOR";
+            : "VERIFICACIÓN OTP Y DESBLOQUEO – ARNOVA";
     };
 
     const loadData = async () => {
@@ -87,69 +87,86 @@ export default function Home({ pais }: HomeProps) {
 
             <div className="p-5">
 
-                <h1 className="text-3xl font-bold mb-6 text-black text-center">
-                    {getTitle()}
-                </h1>
-
                 {/* ========================= */}
-                {/* FILTRO ARNOVA */}
+                {/* HEADER SUPERIOR */}
                 {/* ========================= */}
 
-                {pais === "fc" && (
+                <div className="flex flex-col items-center mb-6">
 
-                    <div className="flex justify-center mb-6">
+                    <h1 className="text-3xl font-bold text-black text-center mb-6">
+                        {getTitle()}
+                    </h1>
 
-                        <select
-                            value={arnovaCountry}
-                            onChange={(e) =>
-                                setArnovaCountry(
-                                    e.target.value as ArnovaCountry
-                                )
-                            }
-                            className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm"
-                        >
-                            <option value="arnova">
-                                El Salvador
-                            </option>
+                    {/* CONTROLES */}
+                    <div className="flex items-center justify-center gap-4 flex-wrap">
 
-                            <option value="guatemala">
-                                Guatemala
-                            </option>
-                        </select>
+                        {/* SELECT PAIS */}
+                        {pais === "fc" && (
+
+                            <select
+                                value={arnovaCountry}
+                                onChange={(e) =>
+                                    setArnovaCountry(
+                                        e.target.value as ArnovaCountry
+                                    )
+                                }
+                                className="
+                                    border border-blue-500
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                    shadow-sm
+                                    text-sm
+                                    font-medium
+                                    min-w-[180px]
+                                    outline-none
+                                "
+                            >
+                                <option value="arnova">
+                                    🇸🇻 El Salvador
+                                </option>
+
+                                <option value="guatemala">
+                                    🇬🇹 Guatemala
+                                </option>
+
+                            </select>
+                        )}
+
+                        {/* BOTONES */}
+                        <div className="flex justify-center gap-3">
+
+                            <button
+                                onClick={() => {
+                                    setShowOtp(true);
+                                    loadData();
+                                }}
+                                className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${showOtp
+                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        : "bg-gray-200 text-black hover:bg-gray-300"
+                                    }`}
+                            >
+                                CÓDIGO OTP
+                            </button>
+
+                            <button
+                                onClick={() => setShowOtp(false)}
+                                className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${!showOtp
+                                        ? "bg-gray-300 text-black"
+                                        : "bg-gray-200 text-black hover:bg-gray-300"
+                                    }`}
+                            >
+                                DESBLOQUEO USUARIO SAFI
+                            </button>
+
+                        </div>
 
                     </div>
-                )}
-
-                {/* Botones */}
-                <div className="flex justify-center gap-4 mb-6">
-
-                    <button
-                        onClick={() => {
-                            setShowOtp(true);
-                            loadData();
-                        }}
-                        className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${showOtp
-                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                            : "bg-gray-200 text-black hover:bg-gray-300"
-                            }`}
-                    >
-                        CÓDIGO OTP
-                    </button>
-
-                    <button
-                        onClick={() => setShowOtp(false)}
-                        className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${!showOtp
-                            ? "bg-lime-500 text-white hover:bg-lime-600"
-                            : "bg-gray-200 text-black hover:bg-gray-300"
-                            }`}
-                    >
-                        DESBLOQUEO USUARIO SAFI
-                    </button>
 
                 </div>
 
-                {/* Texto */}
-                <p className="text-center text-gray-700 mb-4">
+                {/* TEXTO */}
+                <p className="text-center text-gray-700 mb-6">
 
                     {showOtp
                         ? "En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos"
@@ -157,11 +174,14 @@ export default function Home({ pais }: HomeProps) {
 
                 </p>
 
-                {/* Tabla */}
+                {/* TABLA */}
                 <div className="overflow-x-auto">
 
                     {showOtp ? (
-                        <DataTable users={data} loading={loading} />
+                        <DataTable
+                            users={data}
+                            loading={loading}
+                        />
                     ) : (
                         <ActiveUsers />
                     )}

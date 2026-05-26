@@ -111,47 +111,97 @@ export const fetchUsersByCountry = async (
 export const toggleUserStatusByCountry = async (
   usuario: string,
   estadoActual: string,
-  pais: 'arnova' | 'solvia'
+  pais: 'arnova' | 'guatemala' | 'solvia'
 ) => {
-  try {
-    const nuevoEstado = estadoActual === 'A' ? 'B' : 'A';
 
-    const response = await fetch('/api/users/toggle', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usuario, estado: nuevoEstado, pais }), // 👈 el país se envía aquí
-    });
+  try {
+
+    const nuevoEstado =
+      estadoActual === 'A'
+        ? 'B'
+        : 'A';
+
+    const response = await fetch(
+      '/api/users/toggle',
+      {
+
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          usuario,
+          estado: nuevoEstado,
+          pais
+        }),
+      }
+    );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.error || `Error al cambiar estado del usuario (${pais})`);
+
+      const errorData =
+        await response
+          .json()
+          .catch(() => ({}));
+
+      throw new Error(
+        errorData?.error ||
+        `Error al cambiar estado del usuario (${pais})`
+      );
     }
 
     return await response.json();
+
   } catch (error) {
-    console.error(`Error en toggleUserStatusByCountry (${pais}):`, error);
+
+    console.error(
+      `Error en toggleUserStatusByCountry (${pais}):`,
+      error
+    );
+
     throw error;
   }
 };
 
 export const checkUserByCountry = async (
   usuario: string,
-  pais: 'arnova' | 'solvia'
+  pais: 'arnova' | 'guatemala' | 'solvia'
 ) => {
+
   try {
+
     const response = await fetch('/api/users/check', {
+
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usuario, pais }), // 👈 aquí también
+
+      headers: {
+        'Content-Type': 'application/json'
+      },
+
+      body: JSON.stringify({
+        usuario,
+        pais
+      }),
     });
 
     if (!response.ok) {
-      throw new Error(`Error al verificar usuario (${pais})`);
+
+      throw new Error(
+        `Error al verificar usuario (${pais})`
+      );
     }
 
-    return await response.json(); // { exists: boolean, estatus: string }
+    return await response.json();
+
   } catch (error) {
-    console.error(`Error en checkUserByCountry (${pais}):`, error);
+
+    console.error(
+      `Error en checkUserByCountry (${pais}):`,
+      error
+    );
+
     throw error;
   }
 };

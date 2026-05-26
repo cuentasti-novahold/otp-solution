@@ -205,3 +205,8 @@
         white-space: nowrap;
     }
 }
+
+.absolute-select {
+    position: absolute;
+    left: -20px;
+}

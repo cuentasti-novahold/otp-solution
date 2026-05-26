@@ -132,53 +132,52 @@ export default function Home({ pais }: HomeProps) {
 
                 </div>
 
-                {/* TEXTO */}
-                <p className="text-center text-gray-700 mb-6">
+                <div className="flex items-center justify-center mb-6 w-full">
 
-                    {showOtp
-                        ? "En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos"
-                        : "Aquí puedes desbloquear usuarios bloqueados del sistema SAFI"}
+                    {/* SELECTOR IZQUIERDA */}
+                    {pais === "fc" && (
+                        <div className="top-1/2 -translate-y-1/2 absolute-select">
 
-                </p>
+                            <select
+                                value={arnovaCountry}
+                                onChange={(e) =>
+                                    setArnovaCountry(
+                                        e.target.value as ArnovaCountry
+                                    )
+                                }
+                                className="
+                    border
+                    border-blue-500
+                    rounded-lg
+                    px-4
+                    py-3
+                    shadow-sm
+                    text-sm
+                    font-medium
+                    min-w-[180px]
+                    outline-none
+                "
+                            >
+                                <option value="arnova">
+                                    🇸🇻 El Salvador
+                                </option>
 
-                {/* SELECTOR COMO EN LA IMAGEN */}
-                {pais === "fc" && (
+                                <option value="guatemala">
+                                    🇬🇹 Guatemala
+                                </option>
+                            </select>
 
-                    <div className="mb-6">
+                        </div>
+                    )}
 
-                        <select
-                            value={arnovaCountry}
-                            onChange={(e) =>
-                                setArnovaCountry(
-                                    e.target.value as ArnovaCountry
-                                )
-                            }
-                            className="
-                                border
-                                border-blue-500
-                                rounded-lg
-                                px-4
-                                py-3
-                                shadow-sm
-                                text-sm
-                                font-medium
-                                min-w-[180px]
-                                outline-none
-                            "
-                        >
-                            <option value="arnova">
-                                🇸🇻 El Salvador
-                            </option>
+                    {/* TEXTO */}
+                    <p className="text-center text-gray-700">
+                        {showOtp
+                            ? "En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos"
+                            : "Aquí puedes desbloquear usuarios bloqueados del sistema SAFI"}
+                    </p>
 
-                            <option value="guatemala">
-                                🇬🇹 Guatemala
-                            </option>
-
-                        </select>
-
-                    </div>
-                )}
-
+                </div>
                 {/* TABLA */}
                 <div className="overflow-x-auto">
 

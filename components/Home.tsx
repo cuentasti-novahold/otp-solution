@@ -48,7 +48,7 @@ export default function Home({ pais }: HomeProps) {
         }
 
         return arnovaCountry === "guatemala"
-            ? "VERIFICACIÓN OTP Y DESBLOQUEO – ARNOVA GUATEMALA"
+            ? "VERIFICACIÓN OTP Y DESBLOQUEO – ARNOVA"
             : "VERIFICACIÓN OTP Y DESBLOQUEO – ARNOVA";
     };
 
@@ -88,50 +88,17 @@ export default function Home({ pais }: HomeProps) {
             <div className="p-5">
 
                 {/* ========================= */}
-                {/* HEADER SUPERIOR */}
+                {/* HEADER */}
                 {/* ========================= */}
 
                 <div className="flex flex-col items-center mb-6">
 
-                    <h1 className="text-3xl font-bold text-black text-center mb-6">
+                    <h1 className="text-3xl font-bold text-black text-center mb-5">
                         {getTitle()}
                     </h1>
 
                     {/* CONTROLES */}
                     <div className="flex items-center justify-center gap-4 flex-wrap">
-
-                        {/* SELECT PAIS */}
-                        {pais === "fc" && (
-
-                            <select
-                                value={arnovaCountry}
-                                onChange={(e) =>
-                                    setArnovaCountry(
-                                        e.target.value as ArnovaCountry
-                                    )
-                                }
-                                className="
-                                    border border-blue-500
-                                    rounded-xl
-                                    px-4
-                                    py-3
-                                    shadow-sm
-                                    text-sm
-                                    font-medium
-                                    min-w-[180px]
-                                    outline-none
-                                "
-                            >
-                                <option value="arnova">
-                                    🇸🇻 El Salvador
-                                </option>
-
-                                <option value="guatemala">
-                                    🇬🇹 Guatemala
-                                </option>
-
-                            </select>
-                        )}
 
                         {/* BOTONES */}
                         <div className="flex justify-center gap-3">
@@ -142,8 +109,8 @@ export default function Home({ pais }: HomeProps) {
                                     loadData();
                                 }}
                                 className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${showOtp
-                                        ? "bg-blue-600 text-white hover:bg-blue-700"
-                                        : "bg-gray-200 text-black hover:bg-gray-300"
+                                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                                    : "bg-gray-200 text-black hover:bg-gray-300"
                                     }`}
                             >
                                 CÓDIGO OTP
@@ -152,8 +119,8 @@ export default function Home({ pais }: HomeProps) {
                             <button
                                 onClick={() => setShowOtp(false)}
                                 className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${!showOtp
-                                        ? "bg-gray-300 text-black"
-                                        : "bg-gray-200 text-black hover:bg-gray-300"
+                                    ? "bg-gray-300 text-black"
+                                    : "bg-gray-200 text-black hover:bg-gray-300"
                                     }`}
                             >
                                 DESBLOQUEO USUARIO SAFI
@@ -174,6 +141,44 @@ export default function Home({ pais }: HomeProps) {
 
                 </p>
 
+                {/* SELECTOR COMO EN LA IMAGEN */}
+                {pais === "fc" && (
+
+                    <div className="mb-6">
+
+                        <select
+                            value={arnovaCountry}
+                            onChange={(e) =>
+                                setArnovaCountry(
+                                    e.target.value as ArnovaCountry
+                                )
+                            }
+                            className="
+                                border
+                                border-blue-500
+                                rounded-lg
+                                px-4
+                                py-3
+                                shadow-sm
+                                text-sm
+                                font-medium
+                                min-w-[180px]
+                                outline-none
+                            "
+                        >
+                            <option value="arnova">
+                                🇸🇻 El Salvador
+                            </option>
+
+                            <option value="guatemala">
+                                🇬🇹 Guatemala
+                            </option>
+
+                        </select>
+
+                    </div>
+                )}
+
                 {/* TABLA */}
                 <div className="overflow-x-auto">
 
@@ -183,7 +188,9 @@ export default function Home({ pais }: HomeProps) {
                             loading={loading}
                         />
                     ) : (
-                        <ActiveUsers />
+                        <ActiveUsers
+                            pais={getCountryService()}
+                        />
                     )}
 
                 </div>

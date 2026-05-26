@@ -15,81 +15,161 @@ export interface OTP {
 }
 
 interface HomeProps {
-    pais: "fc" | "fs"; // 👈 fc = Arnova, fs = Solvia
+    pais: "fc" | "fs";
 }
 
+type ArnovaCountry = "arnova" | "guatemala";
+
 export default function Home({ pais }: HomeProps) {
+
     const [data, setData] = useState<OTP[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [showOtp, setShowOtp] = useState<boolean>(true);
 
+    // selector Arnova
+    const [arnovaCountry, setArnovaCountry] =
+        useState<ArnovaCountry>("arnova");
+
+    const getCountryService = () => {
+
+        // SOLVIA
+        if (pais === "fs") {
+            return "solvia";
+        }
+
+        // ARNOVA
+        return arnovaCountry;
+    };
+
+    const getTitle = () => {
+
+        if (pais === "fs") {
+            return "VERIFICACIÓN OTP Y DESBLOQUEO – SOLVIA";
+        }
+
+        return arnovaCountry === "guatemala"
+            ? "VERIFICACIÓN OTP Y DESBLOQUEO – ARNOVA GUATEMALA"
+            : "VERIFICACIÓN OTP Y DESBLOQUEO – ARNOVA EL SALVADOR";
+    };
+
     const loadData = async () => {
+
         setLoading(true);
+
         try {
-            // 👇 mapeo de prop pais → servicio
-            const users = await fetchUsersByCountry(pais === "fc" ? "arnova" : "solvia");
+
+            const service = getCountryService();
+
+            const users = await fetchUsersByCountry(service);
+
             setData(users);
+
         } catch (error) {
-            console.error("❌ Error fetching data:", error);
+
+            console.error("Error fetching data:", error);
+
         } finally {
+
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (showOtp) loadData();
-    }, [showOtp, pais]);
+
+        if (showOtp) {
+            loadData();
+        }
+
+    }, [showOtp, pais, arnovaCountry]);
 
     return (
         <main className="w-full bg-white min-h-screen">
+
             <div className="p-5">
+
                 <h1 className="text-3xl font-bold mb-6 text-black text-center">
-                    {pais === "fc"
-                        ? "VERIFICACIÓN OTP Y DESBLOQUEO – ARNOVA"
-                        : "VERIFICACIÓN OTP Y DESBLOQUEO – SOLVIA"}
+                    {getTitle()}
                 </h1>
+
+                {/* ========================= */}
+                {/* FILTRO ARNOVA */}
+                {/* ========================= */}
+
+                {pais === "fc" && (
+
+                    <div className="flex justify-center mb-6">
+
+                        <select
+                            value={arnovaCountry}
+                            onChange={(e) =>
+                                setArnovaCountry(
+                                    e.target.value as ArnovaCountry
+                                )
+                            }
+                            className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm"
+                        >
+                            <option value="arnova">
+                                El Salvador
+                            </option>
+
+                            <option value="guatemala">
+                                Guatemala
+                            </option>
+                        </select>
+
+                    </div>
+                )}
 
                 {/* Botones */}
                 <div className="flex justify-center gap-4 mb-6">
+
                     <button
                         onClick={() => {
                             setShowOtp(true);
                             loadData();
                         }}
                         className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${showOtp
-                                ? "bg-blue-600 text-white hover:bg-blue-700"
-                                : "bg-gray-200 text-black hover:bg-gray-300"
+                            ? "bg-blue-600 text-white hover:bg-blue-700"
+                            : "bg-gray-200 text-black hover:bg-gray-300"
                             }`}
                     >
                         CÓDIGO OTP
                     </button>
+
                     <button
                         onClick={() => setShowOtp(false)}
                         className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${!showOtp
-                                ? "bg-lime-500 text-white hover:bg-lime-600"
-                                : "bg-gray-200 text-black hover:bg-gray-300"
+                            ? "bg-lime-500 text-white hover:bg-lime-600"
+                            : "bg-gray-200 text-black hover:bg-gray-300"
                             }`}
                     >
                         DESBLOQUEO USUARIO SAFI
                     </button>
+
                 </div>
 
-                {/* Texto explicativo */}
+                {/* Texto */}
                 <p className="text-center text-gray-700 mb-4">
+
                     {showOtp
                         ? "En esta pantalla puedes visualizar los códigos generados en los últimos 10 minutos"
                         : "Aquí puedes desbloquear usuarios bloqueados del sistema SAFI"}
+
                 </p>
 
-                {/* Tabla de datos */}
+                {/* Tabla */}
                 <div className="overflow-x-auto">
+
                     {showOtp ? (
                         <DataTable users={data} loading={loading} />
                     ) : (
                         <ActiveUsers />
                     )}
+
                 </div>
+
             </div>
+
         </main>
     );
 }

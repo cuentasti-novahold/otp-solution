@@ -75,23 +75,35 @@ export const checkUser = async (usuario: string) => {
 };
 
 // ----------------------
-// 🔹 Funciones CON PAÍS (nuevas, extendidas)
+// Funciones CON PAÍS (nuevas, extendidas)
 // ----------------------
+type CountryService = 'arnova' | 'solvia' | 'guatemala';
 
-export const fetchUsersByCountry = async (pais: 'arnova' | 'solvia'): Promise<User[]> => {
+export const fetchUsersByCountry = async (
+  pais: CountryService
+): Promise<User[]> => {
+
   const endpointotp = `/api/otp/view?pais=${pais}`;
 
   try {
+
     const response = await fetch(endpointotp, {
       cache: 'no-store',
-      headers: { 'ngrok-skip-browser-warning': 'true' },
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+      },
     });
 
-    if (!response.ok) throw new Error(`Error fetching otps (${pais})`);
+    if (!response.ok) {
+      throw new Error(`Error fetching otps (${pais})`);
+    }
 
     return (await response.json()) as User[];
+
   } catch (error) {
+
     console.error(`Fetch error (${pais}):`, error);
+
     throw error;
   }
 };

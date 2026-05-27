@@ -131,7 +131,7 @@ export default function Home({ pais }: HomeProps) {
                             <button
                                 onClick={() => setShowOtp(false)}
                                 className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${!showOtp
-                                    ? "bg-gray-300 text-black"
+                                    ? "bg-lime-500 text-white hover:bg-lime-600"
                                     : "bg-gray-200 text-black hover:bg-gray-300"
                                     }`}
                             >

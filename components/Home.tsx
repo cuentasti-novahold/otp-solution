@@ -108,7 +108,7 @@ export default function Home({ pais }: HomeProps) {
                                     setShowOtp(true);
                                     loadData();
                                 }}
-                                className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ${showOtp
+                                className={`font-bold py-3 px-6 rounded-full shadow-md transition duration-300 margin-buttons ${showOtp
                                     ? "bg-blue-600 text-white hover:bg-blue-700"
                                     : "bg-gray-200 text-black hover:bg-gray-300"
                                     }`}

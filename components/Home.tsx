@@ -25,6 +25,18 @@ export default function Home({ pais }: HomeProps) {
     const [data, setData] = useState<OTP[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [showOtp, setShowOtp] = useState<boolean>(true);
+    const countries = [
+        {
+            value: "arnova",
+            label: "🇸🇻 El Salvador",
+        },
+        {
+            value: "guatemala",
+            label: "🇬🇹 Guatemala",
+        },
+    ];
+
+    const [openSelect, setOpenSelect] = useState(false);
 
     // Selector Arnova
     const [arnovaCountry, setArnovaCountry] =
@@ -136,25 +148,57 @@ export default function Home({ pais }: HomeProps) {
 
                     {/* SELECTOR IZQUIERDA */}
                     {pais === "fc" && (
-                        <div className="custom-select-container">
+                        <div className="custom-dropdown absolute-select">
 
-                            <select
-                                value={arnovaCountry}
-                                onChange={(e) =>
-                                    setArnovaCountry(
-                                        e.target.value as ArnovaCountry
-                                    )
-                                }
-                                className="custom-select absolute-select"
+                            {/* BOTON */}
+                            <button
+                                className="dropdown-button"
+                                onClick={() => setOpenSelect(!openSelect)}
                             >
-                                <option value="arnova">
-                                    🇸🇻 El Salvador
-                                </option>
+                                {
+                                    countries.find(
+                                        (c) => c.value === arnovaCountry
+                                    )?.label
+                                }
 
-                                <option value="guatemala">
-                                    🇬🇹 Guatemala
-                                </option>
-                            </select>
+                                <span className="dropdown-arrow">
+                                    ▼
+                                </span>
+                            </button>
+
+                            {/* MENU */}
+                            {openSelect && (
+                                <div className="dropdown-menu">
+
+                                    {countries.map((country) => (
+
+                                        <div
+                                            key={country.value}
+                                            className="dropdown-item"
+                                            onClick={() => {
+                                                setArnovaCountry(
+                                                    country.value as ArnovaCountry
+                                                );
+                                                setOpenSelect(false);
+                                            }}
+                                        >
+
+                                            <span>
+                                                {country.label}
+                                            </span>
+
+                                            {arnovaCountry === country.value && (
+                                                <span className="check-icon">
+                                                    ✓
+                                                </span>
+                                            )}
+
+                                        </div>
+
+                                    ))}
+
+                                </div>
+                            )}
 
                         </div>
                     )}

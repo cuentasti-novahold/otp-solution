@@ -163,7 +163,9 @@ const ActiveUsers: React.FC<ActiveUsersProps> = ({ pais }) => {
     const placeholder =
         pais === 'solvia'
             ? 'Ej: FSJSUAREZ'
-            : 'Ej: FCAMONTOYA';
+            : pais === 'guatemala'
+                ? 'Ej: FAGJPEREZ'
+                : 'Ej: FCAMONTOYA';
 
     return (
 
@@ -173,9 +175,9 @@ const ActiveUsers: React.FC<ActiveUsersProps> = ({ pais }) => {
 
                 Ingrese el usuario de acceso a SAFI
 
-                {pais
-                    ? ` (${pais.toUpperCase()})`
-                    : ''}
+                {pais === 'solvia' && ' (FS)'}
+                {pais === 'arnova' && ' (FC)'}
+                {pais === 'guatemala' && ' (FAG)'}
 
             </label>
 
@@ -219,8 +221,8 @@ const ActiveUsers: React.FC<ActiveUsersProps> = ({ pais }) => {
                 onClick={handleToggle}
                 disabled={!botonHabilitado}
                 className={`boton-toggle ${botonHabilitado
-                        ? 'boton-toggle-habilitado'
-                        : 'boton-toggle-deshabilitado'
+                    ? 'boton-toggle-habilitado'
+                    : 'boton-toggle-deshabilitado'
                     }`}
             >
                 {loading

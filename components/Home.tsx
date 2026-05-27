@@ -136,7 +136,7 @@ export default function Home({ pais }: HomeProps) {
 
                     {/* SELECTOR IZQUIERDA */}
                     {pais === "fc" && (
-                        <div className="top-1/2 -translate-y-1/2 absolute-select">
+                        <div className="custom-select-container">
 
                             <select
                                 value={arnovaCountry}
@@ -145,18 +145,7 @@ export default function Home({ pais }: HomeProps) {
                                         e.target.value as ArnovaCountry
                                     )
                                 }
-                                className="
-                    border
-                    border-blue-500
-                    rounded-lg
-                    px-4
-                    py-3
-                    shadow-sm
-                    text-sm
-                    font-medium
-                    min-w-[180px]
-                    outline-none
-                "
+                                className="custom-select absolute-select"
                             >
                                 <option value="arnova">
                                     🇸🇻 El Salvador

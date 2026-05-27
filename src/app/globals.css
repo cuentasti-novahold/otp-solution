@@ -208,5 +208,9 @@
 
 .absolute-select {
     position: absolute;
-    left: -20px;
+    left: 32px;
+}
+
+.align-buttons {
+    margin-top: 19px;
 }

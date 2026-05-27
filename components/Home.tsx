@@ -98,7 +98,7 @@ export default function Home({ pais }: HomeProps) {
                     </h1>
 
                     {/* CONTROLES */}
-                    <div className="flex items-center justify-center gap-4 flex-wrap">
+                    <div className="flex items-center justify-center gap-4 flex-wrap mt-6 align-buttons">
 
                         {/* BOTONES */}
                         <div className="flex justify-center gap-3">

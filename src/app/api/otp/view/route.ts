@@ -27,29 +27,29 @@ function createPool(config: {
 
 // Replica Default
 const poolReportDefault = createPool({
-    host: process.env.DB_REPORT_HOST,
-    database: process.env.DB_REPORT_NAME,
-    user: process.env.DB_REPORT_USER,
-    password: process.env.DB_REPORT_PASS,
-    port: process.env.DB_REPORT_PORT,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT,
 });
 
 // Solvia
 const poolReportSolvia = createPool({
-    host: process.env.DB_REPORT_SOLVIA_HOST,
-    database: process.env.DB_REPORT_SOLVIA_NAME,
-    user: process.env.DB_REPORT_SOLVIA_USER,
-    password: process.env.DB_REPORT_SOLVIA_PASS,
-    port: process.env.DB_REPORT_SOLVIA_PORT,
+    host: process.env.DB_SOLVIA_HOST,
+    database: process.env.DB_SOLVIA_NAME,
+    user: process.env.DB_SOLVIA_USER,
+    password: process.env.DB_SOLVIA_PASS,
+    port: process.env.DB_SOLVIA_PORT,
 });
 
 // Arnova Guatemala
 const poolReportArnova = createPool({
-    host: process.env.DB_REPORT_ARNOVA_HOST,
-    database: process.env.DB_REPORT_ARNOVA_NAME,
-    user: process.env.DB_REPORT_ARNOVA_USER,
-    password: process.env.DB_REPORT_ARNOVA_PASS,
-    port: process.env.DB_REPORT_ARNOVA_PORT,
+    host: process.env.DB_ARNOVA_HOST,
+    database: process.env.DB_ARNOVA_NAME,
+    user: process.env.DB_ARNOVA_USER,
+    password: process.env.DB_ARNOVA_PASS,
+    port: process.env.DB_ARNOVA_PORT,
 });
 
 export async function GET(request: NextRequest) {
@@ -85,17 +85,25 @@ export async function GET(request: NextRequest) {
 
         connection = await pool.getConnection();
 
-        const [rows]: any = await connection.query(`
-            SELECT 
-                Fecha,
-                CodigoOTP,
-                Estatus,
-                OrigenOperacion,
-                TiempoExpiracion,
-                TelefonoCelular
-            FROM CODIGOS_OTP_V
-            ORDER BY Fecha DESC
-        `);
+        let rows: any[] = [];
+
+        // ======================================
+        // GUATEMALA → TABLA DIRECTA
+        // ======================================
+
+        const [result]: any = await connection.query(`
+        SELECT 
+    Fecha,
+    CodigoOTP,
+    Estatus,
+    OrigenOperacion,
+    TiempoExpiracion,
+    TelCelular
+FROM CODIGOSOTP
+ORDER BY Fecha DESC
+    `);
+
+        rows = result;
 
         const formatted = rows.map((row: any) => ({
             fecha: row.Fecha,
@@ -103,7 +111,7 @@ export async function GET(request: NextRequest) {
             estatus: row.Estatus,
             origenOperacion: row.OrigenOperacion,
             tiempoExpiracion: row.TiempoExpiracion,
-            telefonoCelular: row.TelefonoCelular,
+            telefonoCelular: row.TelCelular,
         }));
 
         return NextResponse.json(formatted, {

@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import mysql from 'mysql2/promise';
 
 function createPool(config: {
@@ -92,16 +96,33 @@ export async function GET(request: NextRequest) {
         // ======================================
 
         const [result]: any = await connection.query(`
-        SELECT 
-    Fecha,
-    CodigoOTP,
-    Estatus,
-    OrigenOperacion,
-    TiempoExpiracion,
-    TelCelular
-FROM CODIGOSOTP
-ORDER BY Fecha DESC
-    `);
+    SELECT 
+        Fecha,
+        CodigoOTP,
+
+        CASE
+            WHEN Estatus = 'I' THEN 'INACTIVO'
+            WHEN Estatus = 'A' THEN 'ACTIVO'
+            ELSE Estatus
+        END AS Estatus,
+
+        CASE
+            WHEN OrigenOperacion = 1 THEN 'Alta de cliente'
+            WHEN OrigenOperacion = 2 THEN 'Modificación de cliente'
+            WHEN OrigenOperacion = 3 THEN 'Desembolso de crédito'
+            ELSE 'N/A'
+        END AS OrigenOperacion,
+
+        TiempoExpiracion,
+
+        TelCelular AS TelefonoCelular
+
+    FROM CODIGOSOTP
+
+    WHERE Fecha >= NOW() - INTERVAL 10 MINUTE
+
+    ORDER BY Fecha DESC
+`);
 
         rows = result;
 
@@ -111,14 +132,14 @@ ORDER BY Fecha DESC
             estatus: row.Estatus,
             origenOperacion: row.OrigenOperacion,
             tiempoExpiracion: row.TiempoExpiracion,
-            telefonoCelular: row.TelCelular,
+            telefonoCelular: row.TelefonoCelular,
         }));
 
         return NextResponse.json(formatted, {
             status: 200,
             headers: {
                 'Cache-Control':
-                    'no-store, no-cache, must-revalidate, proxy-revalidate',
+                    'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
                 Pragma: 'no-cache',
                 Expires: '0',
                 'Surrogate-Control': 'no-store',

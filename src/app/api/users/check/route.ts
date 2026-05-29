@@ -15,11 +15,11 @@ const poolArnova = mysql.createPool({
 
 // Pool Guatemala
 const poolGuatemala = mysql.createPool({
-    host: process.env.DB_GUATEMALA_HOST,
-    database: process.env.DB_GUATEMALA_NAME,
-    user: process.env.DB_GUATEMALA_USER,
-    password: process.env.DB_GUATEMALA_PASS,
-    port: Number(process.env.DB_GUATEMALA_PORT || 3306),
+    host: process.env.DB_ARNOVA_HOST,
+    database: process.env.DB_ARNOVA_NAME,
+    user: process.env.DB_ARNOVA_USER,
+    password: process.env.DB_ARNOVA_PASS,
+    port: Number(process.env.DB_ARNOVA_PORT || 3306),
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
